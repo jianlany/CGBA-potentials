@@ -1,17 +1,19 @@
 This folder contain the cpp source code and header file of the BA potential implementation.
 
 ## Installation
-For quick install on Linux system just run `./get_lammps.sh`, the script will download the LAMMPS, unzip and compile it if all the required libraries are ready.
+For quick install on Linux system run `./get_lammps.sh`, the script will download the LAMMPS, unzip and compile it if all the required libraries are ready.
 
-The binary to be called is ```./lammps-stable_5Jun2019/src/lmp_ubuntu.```
+The binary to be called is ```./lammps-stable_23Jun2022/src/lmp_ubuntu.```
 
 If need to build manually, the procedures are:
 1. Download LAMMPS from https://www.lammps.org/
 2. Create soft links of cpp and header file in the LAMMPS `src/` directory
-3. Go to the LAMMPS `src/` directory and include the Molecule package with `make yes-molecule` (and install other needed packages)
+3. Go to the LAMMPS `src/` directory and include the Molecule package with `make yes-molecule` (and install other packages if needed)
 4. Build LAMMPS with `make -j 4 ubuntu`
 
-Note that the model was developed based on the stable version 2019 Jun 5th as shown in `get_lammps.sh`, modifying the code may be necessary for other versions to compile successfully.
+Note that although we modified the code to accomodate the most recent stable version 23Jun2022 of LAMMPS, the model was developed based on the stable version 5Jun2019, which is the recommended version to use the BA model.
+The code for 5Jun2019 LAMMPS can be found in the release *[`28May2022_release`](https://github.com/jianlany92/CGBA-potentials/releases/tag/Publish)*
+
 More detailed installation guide for customized installzation and required compiler of LAMMPS can be found in LAMMPS documentation at https://docs.lammps.org/Build.html
 
 ## Usage

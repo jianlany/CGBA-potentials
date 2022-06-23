@@ -22,6 +22,7 @@ AngleStyle(cgangle,CgAngle)
 
 #include "stdio.h"
 #include "angle.h"
+#include "utils.h"
 
 namespace LAMMPS_NS {
 

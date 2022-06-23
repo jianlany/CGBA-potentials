@@ -30,6 +30,7 @@
 #include "error.h"
 #include <vector>
 #include <algorithm>
+#include "table_file_reader.h"
 
 using namespace LAMMPS_NS;
 using namespace MathConst;
@@ -431,7 +432,7 @@ void CgAngle::settings(int narg, char **arg)
     tabstyle = BICUBIC;
   }
   else error->all(FLERR,"Unknown table style in angle style table");
-  tablength = force->inumeric(FLERR,arg[1]);
+  tablength =utils::inumeric(FLERR,arg[1],false,lmp);
   if (tablength < 4) {
     error->all(FLERR,"Illegal number of bondangle table entries");
   }
@@ -477,7 +478,7 @@ void CgAngle::coeff(int narg, char **arg)
   tb->dl = (tb->l[tb->ninput-1] - tb->l[0]) / (tb->nl-1);
 
   int ilo,ihi;
-  force->bounds(FLERR, arg[0],atom->nangletypes,ilo,ihi);
+  utils::bounds(FLERR, arg[0], 1, atom->nangletypes ,ilo,ihi, error);
   // store ptr to table in tabindex
   int count = 0;
   for (int i = ilo; i <= ihi; i++) {
@@ -585,25 +586,17 @@ void CgAngle::free_table(Table *tb)
 void CgAngle::read_table(Table *tb, char *file, char *keyword)
 {
   // open file
-  FILE *fp = force->open_potential(file);
-  if (fp == NULL) {
-    char str[128];
-    sprintf(str,"Cannot open file %s",file);
-    error->one(FLERR,str);
+  TableFileReader reader(lmp, file, "angle");
+
+  char* line = reader.find_section_start(keyword);
+
+  if (!line) {
+    error->one(FLERR,"Did not find keyword in table file");
   }
 
-  // loop until section found with matching keyword
-  char line[MAXLINE];
-  while (1) {
-    if (fgets(line,MAXLINE,fp) == NULL) {
-      error->one(FLERR,"Did not find keyword in table file");
-    }
-    char *word = strtok(line," \t\n\r");
-    if (strcmp(word,keyword) == 0) break;           // matching keyword
-  }
   // read args on 2nd line of section
   // allocate table arrays for file values
-  fgets(line,MAXLINE,fp);
+  line = reader.next_line();
   param_extract(tb,line);
 
   memory->create(tb->l, tb->ninput, "angle:l");
@@ -615,9 +608,9 @@ void CgAngle::read_table(Table *tb, char *file, char *keyword)
   
   // read a,e,f table values from file
   int itmp;
-  fgets(line,MAXLINE,fp);
+  reader.skip_line();
   for (int i = 0; i < tb->ninput; i++) {
-    fgets(line,MAXLINE,fp);
+    line = reader.next_line();
     // TODO - bilinear style could exclude elq
     sscanf(line,"%d %lg %lg %lg %lg %lg %lg",
            &itmp, &tb->l[i], &tb->q[i], &tb->e[i], 
@@ -626,7 +619,6 @@ void CgAngle::read_table(Table *tb, char *file, char *keyword)
     tb->eq[i] /= MY_PI/180.0;
     tb->elq[i] /= MY_PI/180.0;
   }
-  fclose(fp);
 }
 
 /* ----------------------------------------------------------------------
@@ -694,7 +686,6 @@ void CgAngle::ufl_lookup(int type, double l, double q, double &u, double &fl, do
 {
   Table *tb = &tables[tabindex[type]];
 #ifdef OUTPUT_DEBUG_INFO
-  // std::cout << "Computing energy at (" << l << ", " << q/MY_PI*180.0 << ").\n";
   if ((l > tb->l[tb->ninput-1]) || (l < tb->l[0])){
     std::cout << "l is out of range!!\n" << l << '\n';
   }
