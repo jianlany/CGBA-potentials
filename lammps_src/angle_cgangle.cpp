@@ -29,6 +29,7 @@
 #include "memory.h"
 #include "error.h"
 #include <vector>
+#include <iostream>
 #include <algorithm>
 #include "table_file_reader.h"
 
@@ -88,18 +89,19 @@ Matrix4 operator*(const Matrix4 &A, const Matrix4 &B) {
     }
     return C;
 }
+/*
 std::ostream& operator<<(std::ostream &o, const Vec4 &A) {
-    o << A(0) << " " << A(1) << " " << A(2) << " " << A(3) << "\n";
+    o << A(0) << ' ' << A(1) << ' ' << A(2) << ' ' << A(3) << '\n';
     return o;
 }
-
 std::ostream& operator<<(std::ostream &o, const Matrix4 &A) {
-    o << A(0,0) << " " << A(0,1) << " " << A(0,2) << " " << A(0,3) << "\n";
-    o << A(1,0) << " " << A(1,1) << " " << A(1,2) << " " << A(1,3) << "\n";
-    o << A(2,0) << " " << A(2,1) << " " << A(2,2) << " " << A(2,3) << "\n";
-    o << A(3,0) << " " << A(3,1) << " " << A(3,2) << " " << A(3,3) << "\n";
+    o << A(0,0) << ' ' << A(0,1) << ' ' << A(0,2) << ' ' << A(0,3) << '\n';
+    o << A(1,0) << ' ' << A(1,1) << ' ' << A(1,2) << ' ' << A(1,3) << '\n';
+    o << A(2,0) << ' ' << A(2,1) << ' ' << A(2,2) << ' ' << A(2,3) << '\n';
+    o << A(3,0) << ' ' << A(3,1) << ' ' << A(3,2) << ' ' << A(3,3) << '\n';
     return o;
 }
+*/
 
 /* ---------------------------------------------------------------------- */
 
@@ -764,7 +766,7 @@ void CgAngle::ufl_lookup(int type, double l, double q, double &u, double &fl, do
     ft = dot(px, A*dy) / tb->dq;
   }
 #ifdef OUTPUT_DEBUG_INFO
-    std::cout << "U = " << u << "\n";
+    std::cout << "U = " << u << '\n';
     std::cout << "Fl = " << fl << '\n';
     std::cout << "Fq = " << ft << '\n';
 #endif
